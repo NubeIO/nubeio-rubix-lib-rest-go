@@ -75,13 +75,12 @@ func SortOrder(table, sort, order string) string {
 }
 
 
-func WithChildren(value string) (bool, bool)  {
+func WithChildren(value string) (bool, error)  {
 	if value == "" {
-		return false, false
-	} else if value == "all" { // will return children's children
-		return false, true
+		return false, nil
 	} else  {
-		return helpers.Boolean(value), false
+		c, err := helpers.Boolean(value)
+		return c, err
 	}
 }
 

@@ -10,6 +10,7 @@ type IController interface {
 	GET(path string, handlers ...ResponseHandler) IController
 	POST(path string, handlers ...ResponseHandler) IController
 	PUT(path string, handlers ...ResponseHandler) IController
+	PATCH(path string, handlers ...ResponseHandler) IController
 	DELETE(path string, handlers ...ResponseHandler) IController
 
 	SUB(path string) IController
@@ -61,6 +62,11 @@ func (c controllerImpl) Register(app *Rest, group *gin.RouterGroup) {
 		group.PUT(path, rest2gin(handlers)...)
 	}
 
+	for path, handlers := range c.put {
+		group.PATCH(path, rest2gin(handlers)...)
+	}
+
+
 	for path, handlers := range c.delete {
 		group.DELETE(path, rest2gin(handlers)...)
 	}
@@ -83,6 +89,14 @@ func (c *controllerImpl) POST(path string, handlers ...ResponseHandler) IControl
 }
 
 func (c *controllerImpl) PUT(path string, handlers ...ResponseHandler) IController {
+	for _, handler := range handlers {
+		c.put[path] = append(c.put[path], handler)
+	}
+
+	return c
+}
+
+func (c *controllerImpl) PATCH(path string, handlers ...ResponseHandler) IController {
 	for _, handler := range handlers {
 		c.put[path] = append(c.put[path], handler)
 	}

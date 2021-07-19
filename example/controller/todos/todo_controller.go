@@ -14,10 +14,11 @@ func New() rest.IController {
 
 	c.GET("/", getTODOs)
 	c.POST("/", createTODO)
-	c.SUB("/:id").
-		GET("/", getTODO).
-		PUT("/", updateTODO).
-		DELETE("/", deleteTODO)
+	c.SUB("/id")
+	c.GET("/", getTODO)
+	c.PUT("/", updateTODO)
+	c.PATCH("/", updateTODO)
+	c.DELETE("/", deleteTODO)
 
 
 	return c
@@ -92,7 +93,7 @@ func getDTO(ctx *gin.Context) (dto todos.TODODto, err error) {
 }
 
 func resolveID(ctx *gin.Context) (uint, error) {
-	id := ctx.Param("id")
+	id := ctx.Query("id")
 	val, err := strconv.ParseUint(id, 10, 32)
 	return uint(val), err
 }
