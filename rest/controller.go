@@ -22,6 +22,7 @@ type controllerImpl struct {
 	post map[string][]ResponseHandler
 	get  map[string][]ResponseHandler
 	put  map[string][]ResponseHandler
+	patch  map[string][]ResponseHandler
 	delete map[string][]ResponseHandler
 
 	subControllers []*subControllerImpl
@@ -36,6 +37,7 @@ func Controller(name string) IController {
 	c.get = map[string][]ResponseHandler{}
 	c.post = map[string][]ResponseHandler{}
 	c.put = map[string][]ResponseHandler{}
+	c.patch = map[string][]ResponseHandler{}
 	c.delete = map[string][]ResponseHandler{}
 
 	return c
@@ -62,7 +64,7 @@ func (c controllerImpl) Register(app *Rest, group *gin.RouterGroup) {
 		group.PUT(path, rest2gin(handlers)...)
 	}
 
-	for path, handlers := range c.put {
+	for path, handlers := range c.patch {
 		group.PATCH(path, rest2gin(handlers)...)
 	}
 
@@ -98,7 +100,7 @@ func (c *controllerImpl) PUT(path string, handlers ...ResponseHandler) IControll
 
 func (c *controllerImpl) PATCH(path string, handlers ...ResponseHandler) IController {
 	for _, handler := range handlers {
-		c.put[path] = append(c.put[path], handler)
+		c.patch[path] = append(c.patch[path], handler)
 	}
 
 	return c
