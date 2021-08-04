@@ -1,0 +1,19 @@
+version: 0.1
+phases:
+  install:
+    commands:
+      - echo installing nothing...
+  pre_build:
+    commands:
+      - echo installing dependencies...
+      - cd cmd/buildservice && go get -u ; cd ../..
+  build:
+    commands:
+      # - echo testing...
+      # - echo building...
+      - cd cmd/buildservice && go build -o ../../bin/buildservice ; cd ../..
+artifacts:
+  files:
+    - "**/*"
+  discard-paths: no
+  base-directory: bin/
