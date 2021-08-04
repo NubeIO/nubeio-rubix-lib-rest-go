@@ -6,12 +6,12 @@ phases:
   pre_build:
     commands:
       - echo installing dependencies...
-      - cd cmd/buildservice && go get -u ; cd ../..
+      - pwd
   build:
     commands:
       # - echo testing...
       # - echo building...
-      - cd cmd/buildservice && go build -o ../../bin/buildservice ; cd ../..
+      - ls -l
 artifacts:
   files:
     - "**/*"
