@@ -30,17 +30,17 @@ func New(rest *rest.Service) *BacnetClient {
 	return bc
 }
 
-func (inst *BacnetClient) builder(logFunc interface{}, path string) *rest.Service {
-	//get token if using proxy
-	if inst.Rest.NubeProxy.UseRubixProxy {
-		r := inst.Rest.GetToken()
-		inst.Rest.Options.Headers = map[string]interface{}{"Authorization": r.Token}
-	}
-	inst.Rest.Path = path
-	inst.Rest.LogFunc = rest.GetFunctionName(logFunc)
-	return inst.Rest
-
-}
+//func (inst *BacnetClient) builder(logFunc interface{}, path string) *rest.Service {
+//	//get token if using proxy
+//	if inst.Rest.NubeProxy.UseRubixProxy {
+//		r := inst.Rest.GetToken()
+//		inst.Rest.Options.Headers = map[string]interface{}{"Authorization": r.Token}
+//	}
+//	inst.Rest.Path = path
+//	inst.Rest.LogFunc = rest.GetFunctionName(logFunc)
+//	return inst.Rest
+//
+//}
 
 // Ping Ping server
 func (inst *BacnetClient) Ping() (data *ServerPing, response *rest.ProxyResponse) {
