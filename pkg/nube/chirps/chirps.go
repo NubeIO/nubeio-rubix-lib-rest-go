@@ -2,7 +2,7 @@ package chirps
 
 import (
 	"fmt"
-	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/rest/v1/rest"
+	"github.com/NubeIO/nubeio-rubix-lib-rest-go/pkg/rest"
 )
 
 //admin

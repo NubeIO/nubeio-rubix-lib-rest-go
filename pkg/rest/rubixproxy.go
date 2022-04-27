@@ -65,21 +65,6 @@ type response struct {
 	Body          interface{} `json:"data"`           //As an object
 }
 
-//// New returns a new instance of the nube common apis
-//func New(nubeRest *NubeRest, rest *Service) *NubeRest {
-//	if nubeRest.UseRubixProxy {
-//		if nubeRest.RubixPort == 0 {
-//			nubeRest.RubixPort = nube.Services.RubixService.Port
-//		}
-//		if nubeRest.RubixProxyPath == "" {
-//			nubeRest.Error = errors.New("proxy path must not be empty")
-//			//return nil
-//		}
-//	}
-//	nubeRest.Rest = rest
-//	return nubeRest
-//}
-
 type TokenBody struct {
 	Username string `json:"username"`
 	Password string `json:"password"`
@@ -207,18 +192,19 @@ func (s *Service) BuildResponse(res *Reply, body interface{}) *ProxyResponse {
 }
 
 //FixPath will change the nube proxy and the service port ie: from bacnet 1717 to rubix-service port 1616
-func (s *Service) FixPath() *Service {
+func (s *Service) FixPath() (path string, port int) {
 	proxyName := s.NubeProxy.RubixProxyPath
 	proxyBacnet := nube.Services.BacnetServer.Proxy
 	proxyFF := nube.Services.FlowFramework.Proxy
 	if s.NubeProxy.UseRubixProxy {
+		s.Port = 1616
 		if proxyName == proxyFF { //api/bacnet/points
 			s.Path = fmt.Sprintf("/%s%s", proxyFF, s.Path)
 		} else if proxyName == proxyBacnet {
 			s.Path = fmt.Sprintf("/%s%s", proxyBacnet, s.Path)
 		}
 	}
-	return s
+	return s.Path, s.Port
 }
 
 //LogErr log error messages
@@ -241,11 +227,10 @@ func (s *Service) GetToken() (proxyReturn ProxyReturn) {
 			Body:             map[string]interface{}{"username": s.NubeProxy.RubixUsername, "password": s.NubeProxy.RubixPassword},
 		}
 
-		s.Port = s.NubeProxy.RubixPort
+		s.Port = 1616
 		s.Path = "/api/users/login"
 		s.Method = POST
 		s.Options = options
-
 		resp := s.DoRequest()
 		statusCode := resp.Status()
 		res := new(TokenResponse)

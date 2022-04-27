@@ -81,7 +81,6 @@ type Service struct {
 type NubeProxy struct {
 	UseRubixProxy        bool   //if true then use rubix-service proxy
 	RubixProxyPath       string //the proxy path is what is used in rubix-service to append the url path ps, lora, bacnet
-	RubixPort            int
 	RubixToken           string
 	RubixTokenLastUpdate time.Time
 	RubixUsername        string
