@@ -32,11 +32,16 @@ func TestBACnetRest(*testing.T) {
 		return
 	}
 
+	found, temp, voltage, current, raw, digital, err := GetInputValues(inputs, "UI1")
+	if err != nil {
+		return
+	}
+
 	//for i, input := range inputs {
 	//	fmt.Println(i, input)
 	//}
 
-	fmt.Println(inputs)
+	fmt.Println(found, temp, voltage, current, raw, digital, err)
 	//pprint.PrintStrut(resp)
 	//
 	//write, resp := bacnetClient.UpdatePointValue("UO3", 22)
