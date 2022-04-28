@@ -6,8 +6,8 @@ type Write struct {
 }
 
 type BulkWrite struct {
-	IONum string `json:"IONum"`
-	Value int    `json:"Value"`
+	IONum string `json:"io_num"`
+	Value int    `json:"value"`
 }
 
 type BulkResponse struct {
