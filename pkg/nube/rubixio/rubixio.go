@@ -15,13 +15,15 @@ type Path struct {
 }
 
 var Paths = struct {
-	Ping    Path
-	Outputs Path
-	Inputs  Path
+	Ping        Path
+	Outputs     Path
+	OutputsBulk Path
+	Inputs      Path
 }{
-	Ping:    Path{Path: "/api/system/ping"},
-	Outputs: Path{Path: "/api/outputs"},
-	Inputs:  Path{Path: "/api/inputs/all"},
+	Ping:        Path{Path: "/api/system/ping"},
+	Outputs:     Path{Path: "/api/outputs"},
+	OutputsBulk: Path{Path: "/api/outputs/bulk"},
+	Inputs:      Path{Path: "/api/inputs/all"},
 }
 
 // New returns a new instance of the nube common apis
@@ -64,7 +66,20 @@ func (inst *Client) UpdatePointValue(ioNum string, value int) (point *Write, res
 	path := fmt.Sprintf("%s", Paths.Outputs.Path)
 	req := inst.Rest.
 		SetMethod(rest.POST).
-		SetPath(fmt.Sprintf(path)).
+		SetPath(path).
+		SetBody(body).
+		DoRequest()
+	response = inst.Rest.BuildResponse(req, &point)
+	response.GetResponse()
+	return
+}
+
+// UpdatePointValueBulk bulk write [{"io_num":"UO1", "value":100}, {"io_num":"UO2", "value":100}]
+func (inst *Client) UpdatePointValueBulk(body []BulkWrite) (point *BulkResponse, response *rest.ProxyResponse) {
+	path := fmt.Sprintf("%s", Paths.OutputsBulk.Path)
+	req := inst.Rest.
+		SetMethod(rest.POST).
+		SetPath(path).
 		SetBody(body).
 		DoRequest()
 	response = inst.Rest.BuildResponse(req, &point)

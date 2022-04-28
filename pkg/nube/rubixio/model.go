@@ -5,6 +5,15 @@ type Write struct {
 	Value int    `json:"value"`
 }
 
+type BulkWrite struct {
+	IONum string `json:"IONum"`
+	Value int    `json:"Value"`
+}
+
+type BulkResponse struct {
+	Ok bool `json:"ok"`
+}
+
 type Ping struct {
 	Ok     bool `json:"ok"`
 	PigPIO bool `json:"pigio_is_running"`
