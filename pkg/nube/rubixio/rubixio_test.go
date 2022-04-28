@@ -3,7 +3,6 @@ package rubixio
 import (
 	"fmt"
 	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/nube/nube"
-	pprint "github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/print"
 	"github.com/NubeIO/nubeio-rubix-lib-rest-go/pkg/rest"
 	"testing"
 )
@@ -11,6 +10,7 @@ import (
 func TestBACnetRest(*testing.T) {
 
 	restService := &rest.Service{}
+	restService.Url = "192.168.15.194"
 	restService.Port = 5001
 	restOptions := &rest.Options{}
 	restService.Options = restOptions
@@ -32,17 +32,21 @@ func TestBACnetRest(*testing.T) {
 		return
 	}
 
-	fmt.Println(inputs.UI1.Temp10K)
-	pprint.PrintStrut(resp)
+	//for i, input := range inputs {
+	//	fmt.Println(i, input)
+	//}
 
-	write, resp := bacnetClient.UpdatePointValue("UO3", 22)
-	if resp.GetError() != nil || inputs == nil {
-		fmt.Println(resp.GetError())
-		fmt.Println(resp.GetStatusCode())
-		return
-	}
-
-	fmt.Println(write)
-	pprint.PrintStrut(resp)
+	fmt.Println(inputs)
+	//pprint.PrintStrut(resp)
+	//
+	//write, resp := bacnetClient.UpdatePointValue("UO3", 22)
+	//if resp.GetError() != nil || inputs == nil {
+	//	fmt.Println(resp.GetError())
+	//	fmt.Println(resp.GetStatusCode())
+	//	return
+	//}
+	//
+	//fmt.Println(write)
+	//pprint.PrintStrut(resp)
 
 }

@@ -6,7 +6,7 @@ import (
 	"github.com/NubeIO/nubeio-rubix-lib-rest-go/pkg/rest"
 )
 
-type BacnetClient struct {
+type Client struct {
 	Rest *rest.Service
 }
 
@@ -25,15 +25,15 @@ var Paths = struct {
 }
 
 // New returns a new instance of the nube common apis
-func New(rest *rest.Service) *BacnetClient {
-	bc := &BacnetClient{
+func New(rest *rest.Service) *Client {
+	bc := &Client{
 		Rest: rest,
 	}
 	return bc
 }
 
 // Ping Ping server
-func (inst *BacnetClient) Ping() (data *Ping, response *rest.ProxyResponse) {
+func (inst *Client) Ping() (data *Ping, response *rest.ProxyResponse) {
 	path := fmt.Sprintf(nube.Services.BacnetServer.PingPath)
 	req := inst.Rest.
 		SetMethod(rest.GET).
@@ -45,7 +45,7 @@ func (inst *BacnetClient) Ping() (data *Ping, response *rest.ProxyResponse) {
 }
 
 // GetInputs  get all inputs
-func (inst *BacnetClient) GetInputs() (points *Inputs, response *rest.ProxyResponse) {
+func (inst *Client) GetInputs() (points *Inputs, response *rest.ProxyResponse) {
 	req := inst.Rest.
 		SetMethod(rest.GET).
 		SetPath(fmt.Sprintf("%s", Paths.Inputs.Path)).
@@ -56,7 +56,7 @@ func (inst *BacnetClient) GetInputs() (points *Inputs, response *rest.ProxyRespo
 }
 
 // UpdatePointValue write point value take an int from 1 to 100 (any value > 0 will write a DO to true for AO value from 0-100 = 0-10dc)
-func (inst *BacnetClient) UpdatePointValue(ioNum string, value int) (point *Write, response *rest.ProxyResponse) {
+func (inst *Client) UpdatePointValue(ioNum string, value int) (point *Write, response *rest.ProxyResponse) {
 	body := &Write{
 		IoNum: ioNum,
 		Value: value,
