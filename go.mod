@@ -1,6 +1,6 @@
 module github.com/NubeIO/nubeio-rubix-lib-rest-go
 
-go 1.18
+go 1.17
 
 require (
 	github.com/NubeIO/nubeio-rubix-lib-helpers-go v0.2.6

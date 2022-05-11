@@ -35,7 +35,7 @@ func New(bc *ChirpClient) *ChirpClient {
 }
 
 func (inst *ChirpClient) builder(method string, logFunc interface{}, path string) *rest.Service {
-	//get token if using proxy
+	// get token if using proxy
 	if inst.Rest.NubeProxy.UseRubixProxy {
 		r := inst.Rest.GetToken()
 		inst.Rest.Options.Headers = map[string]interface{}{"Authorization": r.Token}
@@ -43,7 +43,7 @@ func (inst *ChirpClient) builder(method string, logFunc interface{}, path string
 	inst.Rest.Method = method
 	inst.Rest.Path = path
 	inst.Rest.LogFunc = rest.GetFunctionName(logFunc)
-	inst.Rest = inst.Rest.FixPath()
+	inst.Rest.Path, inst.Rest.Port = inst.Rest.FixPath()
 	return inst.Rest
 
 }
