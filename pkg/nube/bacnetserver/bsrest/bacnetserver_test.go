@@ -49,7 +49,7 @@ func TestBACnetRest(*testing.T) {
 	fmt.Println(ping)
 	if resp.GetError() != nil || ping == nil {
 		fmt.Println(resp.GetError())
-		fmt.Println(resp.GetStatusCode())
+		fmt.Println(resp.GetStatus())
 		return
 	}
 

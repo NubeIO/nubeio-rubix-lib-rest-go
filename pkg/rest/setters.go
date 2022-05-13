@@ -6,7 +6,7 @@ REST Setters
 
 func (s *Service) SetPath(path string) *Service {
 	method := s.Method
-	if s.NubeProxy.UseRubixProxy {
+	if s.NubeProxy.UseRubixProxy { //set rubix proxy
 		r := s.GetToken()
 		s.Options.Headers = map[string]interface{}{"Authorization": r.Token}
 		s.Path = path

@@ -1,7 +1,6 @@
 package chirps
 
 import (
-	"fmt"
 	"github.com/NubeIO/nubeio-rubix-lib-rest-go/pkg/rest"
 )
 
@@ -34,19 +33,6 @@ func New(bc *ChirpClient) *ChirpClient {
 	return bc
 }
 
-func (inst *ChirpClient) builder(method string, logFunc interface{}, path string) *rest.Service {
-	// get token if using proxy
-	if inst.Rest.NubeProxy.UseRubixProxy {
-		r := inst.Rest.GetToken()
-		inst.Rest.Options.Headers = map[string]interface{}{"Authorization": r.Token}
-	}
-	inst.Rest.Method = method
-	inst.Rest.Path = path
-	inst.Rest.LogFunc = rest.GetFunctionName(logFunc)
-	inst.Rest.Path, inst.Rest.Port = inst.Rest.FixPath()
-	return inst.Rest
-
-}
 
 type TokenResponse struct {
 	JWT string `json:"jwt"`
@@ -58,23 +44,21 @@ type Token struct {
 }
 
 // GetToken get cs token
-func (inst *ChirpClient) GetToken(token *Token) (data *TokenResponse, response *rest.ProxyResponse) {
+func (inst *ChirpClient) GetToken(token *Token) (data *TokenResponse, response *rest.Reply) {
 	req := inst.Rest.
 		SetMethod(rest.POST).
 		SetPath(Paths.Login.Path).
 		SetBody(token).
 		DoRequest()
-	response = inst.Rest.BuildResponse(req, data)
-	response.GetResponse()
+	response = inst.Rest.RestResponse(req, data)
 	return
 }
 
 // GetDevices get all
-func (inst *ChirpClient) GetDevices(token string) (data *Devices, response *rest.ProxyResponse) {
-	path := fmt.Sprintf("/api/devices?limit=%d&organizationID=%d", limit, orgID)
-	inst.Rest = inst.builder(rest.GET, inst.GetDevices, path)
+func (inst *ChirpClient) GetDevices(token string) (data *Devices, response *rest.Reply) {
+	//path := fmt.Sprintf("/api/devices?limit=%d&organizationID=%d", limit, orgID)
 	inst.Rest.Options.Headers = map[string]interface{}{"Grpc-Metadata-Authorization": token}
 	res := inst.Rest.DoRequest()
-	response = inst.Rest.BuildResponse(res, &data)
+	response = inst.Rest.RestResponse(res, &data)
 	return
 }

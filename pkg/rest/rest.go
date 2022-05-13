@@ -8,12 +8,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/types"
 	"github.com/go-resty/resty/v2"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -110,34 +108,19 @@ type Options struct {
 type Reply struct {
 	err               error
 	body              []byte
-	bodyJson          interface{}
 	statusCode        int
-	IsError           bool
-	ApiResponseIsBad  bool //is true response is a 404
-	ApiResponseIsJSON bool
-	ApiResponseLength int
+	apiResponseIsJSON bool
+	serverWasOffline  bool
 }
 
 func (s *Service) DoRequest() (response *Reply) {
 	response = s.do()
-	statusCode := response.statusCode
+	statusCode := response.GetStatus()
 	logPath := fmt.Sprintf("%s.%s() method: %s host: %s statusCode:%d", s.LogPath, s.LogFunc, strings.ToUpper(s.Method), s.Url+s.Path, statusCode)
-	if response.ApiResponseIsBad {
+	if statusCode > 299 {
 		log.Errorln(logPath)
 	} else {
 		log.Println(logPath)
-	}
-	//check if response is JSON
-	isJson := isJSON(response.AsString())
-	if isJson {
-		response.ApiResponseIsJSON = isJson
-		//get response type as in an object or an array
-		getType := types.DetectMapTypes(response.AsJsonNoErr())
-		if getType.IsArray {
-			response.ApiResponseLength = getJSONLen(response.AsJsonNoErr())
-		} else {
-			response.ApiResponseLength = 1
-		}
 	}
 	return response
 }
@@ -175,7 +158,6 @@ func (s *Service) do() *Reply {
 	if !s.EnableKeepAlive {
 		client = client.SetHeader("Connection", "close")
 	}
-
 	if s.Proxy != "" {
 		client = client.SetProxy(s.Proxy)
 	}
@@ -296,37 +278,52 @@ func NewRestyClient() *resty.Client {
 var reply = &Reply{}
 
 func (s *Service) GetResult(resp *resty.Response, err error) *Reply {
+	statusCode := resp.StatusCode()
+	if resp.StatusCode() == 0 {
+		statusCode = 500
+		noBody := EmptyBody{
+			EmptyBody: "server was offline",
+		}
+		reply.SetNewBody(noBody)
+		reply.serverWasOffline = true
+	} else {
+		reply.body = resp.Body()
+	}
+	reply.statusCode = statusCode
 	if err != nil {
 		reply.err = err
 		return reply
 	}
-	reply.body = resp.Body()
 	if !resp.IsSuccess() {
 		if reply.AsString() == "" {
-			reply.ApiResponseIsBad = true
-			reply.err = errors.New("request failed -> " + " http StatusCode: " + strconv.Itoa(resp.StatusCode()) + " message: " + resp.Status())
-			reply.statusCode = resp.StatusCode()
+			reply.err = errors.New("request failed -> " + " http StatusCode: " + fmt.Sprintf("%d", statusCode) + " message: " + resp.Status())
 			return reply
 		}
 	}
-	reply.statusCode = resp.StatusCode()
 	return reply
+}
+
+func (s *Service) RestResponse(res *Reply, data interface{}) *Reply {
+	if !res.serverWasOffline {
+		res.ToInterfaceNoErr(data)
+	}
+	return res
 }
 
 // Log log for debugging
 func (res *Reply) Log() {
-	log.Println(reply.Status())
-	log.Println(reply.err)
+	log.Println(res.GetStatus())
+	log.Println(res.err)
 
 }
 
-// Status return http status code
-func (res *Reply) Status() int {
+// GetStatus return http status code
+func (res *Reply) GetStatus() int {
 	return res.statusCode
 }
 
-// Status return http status code
-func (res *Reply) Error() error {
+// GetError return http status code
+func (res *Reply) GetError() error {
 	return res.err
 }
 
@@ -335,14 +332,25 @@ func (res *Reply) AsString() string {
 	return string(res.body)
 }
 
+// SetNewBody return as body as blank interface
+func (res *Reply) SetNewBody(data interface{}) (err error) {
+	b, err := json.Marshal(data)
+	if err != nil {
+		res.err = err
+		return err
+	}
+	reply.body = b
+	return
+}
+
 // AsJson return as body as blank interface
 func (res *Reply) AsJson() (interface{}, error) {
 	var out interface{}
-	err := json.Unmarshal(reply.body, &out)
+	err := json.Unmarshal(res.body, &out)
 	if err != nil {
 		return nil, err
 	}
-	return res, err
+	return out, err
 }
 
 // AsJsonNoErr return as body as blank interface and ignore any errors
@@ -352,7 +360,7 @@ func (res *Reply) AsJsonNoErr() interface{} {
 	if err != nil {
 		return nil
 	}
-	return res
+	return out
 }
 
 // ToInterface return as body as a json

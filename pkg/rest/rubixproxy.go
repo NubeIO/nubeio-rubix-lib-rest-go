@@ -63,6 +63,7 @@ type response struct {
 	Message       interface{} `json:"message"`        //"Not Found!",
 	BodyType      DataType    `json:"body_type"`      //As an array "rows": [{"name": "point1"}, {"name": "point2"}], { "name": "point1"},
 	Body          interface{} `json:"data"`           //As an object
+	AsString      interface{} `json:"as_string"`
 }
 
 type TokenBody struct {
@@ -80,7 +81,7 @@ type ProxyReturn struct {
 }
 
 type EmptyBody struct {
-	EmptyBody string `json:"empty_body"`
+	EmptyBody string `json:"error"`
 }
 
 func failedBodyMessages(bodyError string) (found bool) {
@@ -98,19 +99,20 @@ func (res *ProxyResponse) Log() {
 		pprint.PrintStrut(res.Response.Body)
 		log.Println(res.Response.StatusCode)
 	}
-
 }
 
-//BuildResponse formats the API resp
+// BuildResponse formats the API resp
+// Deprecated
 func (s *Service) BuildResponse(res *Reply, body interface{}) *ProxyResponse {
-	statusCode := res.Status()
-	err := res.Error()
+	statusCode := res.GetStatus()
+	err := res.GetError()
 	resp := &ProxyResponse{}
 	resp.Response.StatusCode = statusCode
-	responseIsJSON := res.ApiResponseIsJSON
+	responseIsJSON := res.apiResponseIsJSON
 	resp.Response.ServiceStatus = true
 	resp.Response.GatewayStatus = true
 	resp.Response.BadRequest = true
+	resp.Response.AsString = res.AsString()
 	if statusCode == 0 || StatusCodesAllBad(statusCode) { //if status code is 0 it means that either rubix-service is down or a rubix app
 		if statusCode == 0 {
 			resp.Response.StatusCode = 503
@@ -221,7 +223,7 @@ func (s *Service) GetToken() (proxyReturn ProxyReturn) {
 	if token == "" || tokenTimeDiffMin(s.NubeProxy.RubixTokenLastUpdate, 15) {
 		options := &Options{
 			Timeout:          2 * time.Second,
-			RetryCount:       2,
+			RetryCount:       0,
 			RetryWaitTime:    2 * time.Second,
 			RetryMaxWaitTime: 0,
 			Body:             map[string]interface{}{"username": s.NubeProxy.RubixUsername, "password": s.NubeProxy.RubixPassword},
@@ -232,7 +234,7 @@ func (s *Service) GetToken() (proxyReturn ProxyReturn) {
 		s.Method = POST
 		s.Options = options
 		resp := s.DoRequest()
-		statusCode := resp.Status()
+		statusCode := resp.GetStatus()
 		res := new(TokenResponse)
 		err := resp.ToInterface(&res)
 		if err != nil || statusCode != 200 || res.AccessToken == "" {

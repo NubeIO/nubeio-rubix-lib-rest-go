@@ -29,7 +29,7 @@ func TestRubixIO(*testing.T) {
 	inputs, resp := bacnetClient.GetInputs()
 	if resp.GetError() != nil || inputs == nil {
 		fmt.Println(resp.GetError())
-		fmt.Println(resp.GetStatusCode())
+		fmt.Println(resp.GetError())
 		return
 	}
 
@@ -48,7 +48,7 @@ func TestRubixIO(*testing.T) {
 	write, resp := bacnetClient.UpdatePointValue("DO2", 0)
 	if resp.GetError() != nil || inputs == nil {
 		fmt.Println(resp.GetError())
-		fmt.Println(resp.GetStatusCode())
+		fmt.Println(resp.GetError())
 		return
 	}
 
