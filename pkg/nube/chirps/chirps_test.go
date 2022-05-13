@@ -1,7 +1,6 @@
 package chirps
 
 import (
-	"fmt"
 	"github.com/NubeIO/nubeio-rubix-lib-rest-go/pkg/rest"
 	"testing"
 )
@@ -21,11 +20,11 @@ func TestChirpsPing(*testing.T) {
 	nubeProxy.RubixPassword = "N00BWires"
 	restService.NubeProxy = nubeProxy
 
-	client := New(&ChirpClient{Rest: restService})
-
-	token, res := client.GetToken(&Token{Email: "admin", Password: "N00BWAN"})
-	fmt.Println("token", res.GetStatusCode())
-	fmt.Println("token", token)
+	//client := New(&ChirpClient{Rest: restService})
+	//
+	//token, res := client.GetToken(&Token{Email: "admin", Password: "N00BWAN"})
+	//fmt.Println("token", res.Get())
+	//fmt.Println("token", token)
 
 	//devices, res := client.GetDevices(token.JWT)
 	//fmt.Println("devices", res.StatusCode)

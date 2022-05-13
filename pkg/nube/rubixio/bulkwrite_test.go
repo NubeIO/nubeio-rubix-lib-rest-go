@@ -39,7 +39,7 @@ func TestBulkWrite(*testing.T) {
 	inputs, resp := bacnetClient.UpdatePointValueBulk(bulk)
 	if resp.GetError() != nil || inputs == nil {
 		fmt.Println(resp.GetError())
-		fmt.Println(resp.GetStatusCode())
+		fmt.Println(resp.GetStatus())
 		return
 	}
 	fmt.Println(inputs)

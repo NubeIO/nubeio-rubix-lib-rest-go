@@ -1,16 +1,16 @@
-package bsrest
+package rs
 
 import (
 	"fmt"
 	"github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/nube/nube"
-	pprint "github.com/NubeIO/nubeio-rubix-lib-helpers-go/pkg/print"
 	"github.com/NubeIO/nubeio-rubix-lib-rest-go/pkg/rest"
 	"testing"
 )
 
-func TestBACnetRest(*testing.T) {
+func TestRubix(*testing.T) {
 
 	restService := &rest.Service{}
+	restService.Url = "192.168.15.19"
 	restService.Port = 1616
 	restOptions := &rest.Options{}
 	restService.Options = restOptions
@@ -20,20 +20,11 @@ func TestBACnetRest(*testing.T) {
 	nubeProxy.UseRubixProxy = true
 	nubeProxy.RubixUsername = "admin"
 	nubeProxy.RubixPassword = "N00BWires"
-	nubeProxy.RubixProxyPath = nube.Services.BacnetServer.Proxy
+	nubeProxy.RubixProxyPath = nube.Services.RubixService.Proxy
 	restService.NubeProxy = nubeProxy
 
-	bacnetClient := New(restService)
+	client := New(restService)
 
-	ping, resp := bacnetClient.Ping()
-	fmt.Println(ping)
-	if resp.GetError() != nil || ping == nil {
-		fmt.Println(resp.GetError())
-		fmt.Println(resp.GetStatus())
-		return
-	}
-
-	fmt.Println(ping.UpHour)
-	pprint.PrintStrut(resp)
-
+	_, res := client.Ping()
+	fmt.Println(res.AsString())
 }
