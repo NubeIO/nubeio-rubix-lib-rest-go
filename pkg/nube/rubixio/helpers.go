@@ -1,6 +1,9 @@
 package rubixio
 
-import "reflect"
+import (
+	"fmt"
+	"reflect"
+)
 
 //GetInputValues get all the input values by passing in the IONum (pass in UI as an example)
 func GetInputValues(strut interface{}, key string) (found bool, temp, voltage, current, raw float64, digital int, err error) {
@@ -9,27 +12,39 @@ func GetInputValues(strut interface{}, key string) (found bool, temp, voltage, c
 		typeField := val.Type().Field(i)
 		if typeField.Name == key {
 			found = true
-			Thermistor10KType2 := val.Field(i).FieldByName("Thermistor10KType2")
-			if Thermistor10KType2.CanFloat() {
-				temp = Thermistor10KType2.Float()
-			}
-			VoltageDc := val.Field(i).FieldByName("VoltageDc")
-			if VoltageDc.CanFloat() {
-				voltage = VoltageDc.Float()
-			}
-			Raw := val.Field(i).FieldByName("Raw")
-			if Raw.CanFloat() {
-				raw = Raw.Float()
-			}
-			Current := val.Field(i).FieldByName("Current")
-			if Current.CanFloat() {
-				current = Current.Float()
-			}
-			Digital := val.Field(i).FieldByName("Digital")
-			if Digital.CanInt() {
-				digital = int(Digital.Int())
-			}
+			thermistor10KType2 := val.Field(i).FieldByName("Thermistor10KType2")
+			temp = float(thermistor10KType2)
+
+			voltageDc := val.Field(i).FieldByName("VoltageDc")
+			voltage = float(voltageDc)
+
+			rawVal := val.Field(i).FieldByName("Raw")
+			raw = float(rawVal)
+
+			currentVal := val.Field(i).FieldByName("Current")
+			current = float(currentVal)
+
+			digitalVal := val.Field(i).FieldByName("Digital")
+			digital = integer(digitalVal)
 		}
 	}
 	return
+}
+
+func float(v reflect.Value) float64 {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered")
+		}
+	}()
+	return v.Float()
+}
+
+func integer(v reflect.Value) int {
+	defer func() {
+		if r := recover(); r != nil {
+			fmt.Println("Recovered")
+		}
+	}()
+	return int(v.Int())
 }

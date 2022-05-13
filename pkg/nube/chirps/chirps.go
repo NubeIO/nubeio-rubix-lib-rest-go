@@ -33,6 +33,7 @@ func New(bc *ChirpClient) *ChirpClient {
 	return bc
 }
 
+
 type TokenResponse struct {
 	JWT string `json:"jwt"`
 }
