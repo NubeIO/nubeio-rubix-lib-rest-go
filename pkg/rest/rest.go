@@ -178,7 +178,7 @@ func (s *Service) do() *Reply {
 	}
 	if cLen := len(opt.Cookies); cLen > 0 {
 		cookies := make([]*http.Cookie, cLen)
-		for k, _ := range opt.Cookies {
+		for k := range opt.Cookies {
 			cookies = append(cookies, &http.Cookie{
 				Name:     k,
 				Value:    fmt.Sprintf("%v", opt.Cookies[k]),
@@ -305,7 +305,9 @@ func (s *Service) GetResult(resp *resty.Response, err error) *Reply {
 
 func (s *Service) RestResponse(res *Reply, data interface{}) *Reply {
 	if !res.serverWasOffline {
-		res.ToInterfaceNoErr(data)
+		if data != nil {
+			res.ToInterfaceNoErr(data)
+		}
 	}
 	return res
 }
