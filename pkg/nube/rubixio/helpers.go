@@ -1,7 +1,6 @@
 package rubixio
 
 import (
-	"fmt"
 	"reflect"
 )
 
@@ -34,7 +33,7 @@ func GetInputValues(strut interface{}, key string) (found bool, temp, voltage, c
 func float(v reflect.Value) float64 {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered")
+			//fmt.Println("Recovered")
 		}
 	}()
 	return v.Float()
@@ -43,7 +42,7 @@ func float(v reflect.Value) float64 {
 func integer(v reflect.Value) int {
 	defer func() {
 		if r := recover(); r != nil {
-			fmt.Println("Recovered")
+			//fmt.Println("Recovered")
 		}
 	}()
 	return int(v.Int())
